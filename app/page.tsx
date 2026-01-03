@@ -333,6 +333,10 @@ export default function Home() {
           </p>
         )}
 
+        {process.env.NEXT_PUBLIC_APP_ENV === 'prod' && (
+        <p className="mt-6">Tips: Vercel not support fs. Please try using git clone.</p>
+      )}
+
         <input
           ref={inputRef}
           hidden
