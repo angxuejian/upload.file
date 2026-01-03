@@ -27,7 +27,9 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [chunks, setChunks] = useState<FileChunk[]>([]);
   const [fileUrl, setFileUrl] = useState<string>("");
-  const [uploadStatus, setUploadStatus] = useState<'success' | 'error' | ''>('')
+  const [uploadStatus, setUploadStatus] = useState<"success" | "error" | "">(
+    ""
+  );
 
   const fileInstance = useRef<FileInstance | null>(null);
   const isPaused = useRef<boolean>(false);
@@ -35,7 +37,6 @@ export default function Home() {
     { index: number; controller: AbortController }[]
   >([]);
   const uploadedCountRef = useRef(0);
-
 
   const triggerInputFile = () => {
     inputRef.current?.click();
@@ -46,8 +47,8 @@ export default function Home() {
     if (!files) return;
     const file = files[0];
 
-    isPaused.current = false
-    setUploadStatus('')
+    isPaused.current = false;
+    setUploadStatus("");
     setLoadingHash(true);
     setFileNanme(file.name);
     setFileUrl("");
@@ -135,8 +136,8 @@ export default function Home() {
     for (let i = 0; i < chunks.length; i++) {
       if (isPaused.current) {
         await Promise.allSettled(pool);
-        break
-      };
+        break;
+      }
 
       const itemChunk = chunks[i];
       if (itemChunk.upload) continue;
@@ -195,17 +196,16 @@ export default function Home() {
         data.append("filename", fileInstance.current.file.name);
         data.append("type", fileInstance.current.file.type);
         data.append("totalChunks", `${chunks.length}`);
-        data.append('size', `${fileInstance.current.file.size}`)
+        data.append("size", `${fileInstance.current.file.size}`);
 
         await mergeBigFile(data);
 
-        setUploadStatus('success')
+        setUploadStatus("success");
       }
     }
   };
 
   const startUpload = async () => {
-
     if (loading) return;
 
     setLoading(true);
@@ -225,17 +225,17 @@ export default function Home() {
           },
           controller.signal
         );
-        setUploadStatus('success')
+        setUploadStatus("success");
       } else {
         await uploadBigChunksFile();
       }
     } catch {
-      setUploadStatus('error')
+      setUploadStatus("error");
 
-      isPaused.current = false
-      setUploadStatus('')
+      isPaused.current = false;
+      setUploadStatus("");
       setLoadingHash(false);
-      setFileNanme('');
+      setFileNanme("");
       setFileUrl("");
       setProgress(0);
       setChunks([]);
@@ -316,16 +316,24 @@ export default function Home() {
               className={` mt-6  border-b ${
                 loadingHash ? "cursor-wait opacity-60" : "cursor-pointer"
               }
-              ${ loading ? 'cursor-wait opacity-60' : 'cursor-pointer'}
+              ${loading ? "cursor-wait opacity-60" : "cursor-pointer"}
               `}
             >
               {/* {loading ? (isFileType === "small" ? "取消" : "暂停") : "上传"} */}
-              { loading ? '上传中...' : '上传'}
+              {loading ? "上传中..." : "上传"}
             </button>
           )}
         </div>
 
-        {uploadStatus && <p className={`mt-6 ${uploadStatus === 'success' ? 'text-green-400' : 'text-red-400'}`}>{uploadStatus}</p>}
+        {uploadStatus && (
+          <p
+            className={`mt-6 ${
+              uploadStatus === "success" ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {uploadStatus}
+          </p>
+        )}
 
         {fileUrl && (
           <p onClick={handleDownload} className="mt-6 cursor-pointer border-b">
@@ -333,9 +341,12 @@ export default function Home() {
           </p>
         )}
 
-        {process.env.NEXT_PUBLIC_APP_ENV === 'prod' && (
-        <p className="mt-6">Tips: Vercel not support fs. Please try using git clone.</p>
-      )}
+        {/* Vercel 官方变量 */}
+        {process.env.NEXT_PUBLIC_VERCEL_ENV === "production" && (
+          <p className="mt-6">
+            Tips: Vercel not support fs. Please try using git clone.
+          </p>
+        )}
 
         <input
           ref={inputRef}
