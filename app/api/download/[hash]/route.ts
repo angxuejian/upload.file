@@ -1,18 +1,21 @@
 import fs from "fs/promises";
 import path from "path";
+import { NextRequest, NextResponse } from "next/server";
 
 const FILE_DIR = path.join(process.cwd(), "uploads/files");
 const META_DIR = path.join(process.cwd(), "uploads/meta");
 
 export async function GET(
-  req: Request,
-  { params }: { params: { hash: string } }
+  req: NextRequest,
+  context: { params: Promise<{ hash: string }> }
 ) {
+  const { hash } = await context.params;
 
-const { hash } = await params
+  if (!hash) {
+    return NextResponse.json({ error: "hash is required" }, { status: 400 });
+  }
 
   const metaPath = path.join(META_DIR, hash + ".json");
-    console.log(hash, '???')
   let meta;
   try {
     meta = JSON.parse(await fs.readFile(metaPath, "utf-8"));
